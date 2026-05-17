@@ -1,0 +1,62 @@
+[
+  {
+    "id": "1779023567963",
+    "school": "Arnhem",
+    "naam": "brent",
+    "email": "bschoemaker2004@gmail.com",
+    "fotoUrl": "/uploads/1779023567958-png-clipart-staff-of-hermes-caduceus-as-a-symbol-of-medicine-caduceus-as-a-symbol-of-medicine-gold-medical-symbol-staff-of-hermes-symbol-gold-coin-logo.png",
+    "status": "goedgekeurd",
+    "goedgekeurdDoor": [
+      "Arnhem"
+    ],
+    "afgekeurdDoor": [],
+    "stemcode": "BJAU3G",
+    "stemGebruikt": false,
+    "createdAt": "2026-05-17T13:12:47.963Z"
+  },
+  {
+    "id": "1779025332638",
+    "school": "ATKA",
+    "naam": "brent",
+    "email": "brent.schoemaker@icloud.com",
+    "fotoUrl": "/uploads/1779025332633-png-clipart-staff-of-hermes-caduceus-as-a-symbol-of-medicine-caduceus-as-a-symbol-of-medicine-gold-medical-symbol-staff-of-hermes-symbol-gold-coin-logo.png",
+    "status": "goedgekeurd",
+    "goedgekeurdDoor": [
+      "ATKA"
+    ],
+    "afgekeurdDoor": [],
+    "stemcode": "JS5LLR",
+    "stemGebruikt": false,
+    "createdAt": "2026-05-17T13:42:12.638Z"
+  },
+  {
+    "id": "1779025898045",
+    "school": "Arnhem",
+    "naam": "brent ",
+    "email": "bschoemaker2004@gmail.com",
+    "fotoUrl": "/uploads/1779025898041-png-clipart-staff-of-hermes-caduceus-as-a-symbol-of-medicine-caduceus-as-a-symbol-of-medicine-gold-medical-symbol-staff-of-hermes-symbol-gold-coin-logo.png",
+    "status": "goedgekeurd",
+    "goedgekeurdDoor": [
+      "Arnhem"
+    ],
+    "afgekeurdDoor": [],
+    "stemcode": "9CHJPU",
+    "stemGebruikt": false,
+    "createdAt": "2026-05-17T13:51:38.045Z"
+  },
+  {
+    "id": "1779027460138",
+    "school": "ATKA",
+    "naam": "brent",
+    "email": "brent.schoemaker@icloud.com",
+    "fotoUrl": "/uploads/1779027460133-png-clipart-staff-of-hermes-caduceus-as-a-symbol-of-medicine-caduceus-as-a-symbol-of-medicine-gold-medical-symbol-staff-of-hermes-symbol-gold-coin-logo.png",
+    "status": "goedgekeurd",
+    "goedgekeurdDoor": [
+      "ATKA"
+    ],
+    "afgekeurdDoor": [],
+    "stemcode": "CFG3I5",
+    "stemGebruikt": true,
+    "createdAt": "2026-05-17T14:17:40.138Z"
+  }
+]

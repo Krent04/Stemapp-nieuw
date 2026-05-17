@@ -1,0 +1,20 @@
+[
+  {
+    "code": "CFG3I5",
+    "school": "ATKA",
+    "puntenVerdeling": {
+      "Arnhem": 12,
+      "Maastricht": 10,
+      "Rotterdam": 8,
+      "Utrecht": 7,
+      "Filmacademie": 6,
+      "Antwerpen": 5,
+      "Leuven": 4,
+      "Den Bosch": 3,
+      "Brussel": 2,
+      "Gent": 1,
+      "Tilburg": 0
+    },
+    "createdAt": "2026-05-17T14:19:01.661Z"
+  }
+]
