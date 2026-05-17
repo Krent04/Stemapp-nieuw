@@ -28,8 +28,18 @@ app.use(bodyParser.json());
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 const SCHOLEN = [
-  "Antwerpen", "Arnhem", "ATKA", "Brussel", "Den Bosch", "Filmacademie",
-  "Gent", "Leuven", "Maastricht", "Rotterdam", "Tilburg", "Utrecht"
+  "Antwerpen",
+  "Arnhem",
+  "ATKA",
+  "Brussel",
+  "Den Bosch",
+  "Filmacademie",
+  "Gent",
+  "Leuven",
+  "Maastricht",
+  "Rotterdam",
+  "Tilburg",
+  "Utrecht",
 ];
 
 const SONGFESTIVAL_PUNTEN = [12, 10, 8, 7, 6, 5, 4, 3, 2, 1, 0];
@@ -46,7 +56,7 @@ const SUBADMIN_WACHTWOORDEN = {
   Maastricht: "subadminMaastricht",
   Rotterdam: "subadminRotterdam",
   Tilburg: "subadminTilburg",
-  Utrecht: "subadminUtrecht"
+  Utrecht: "subadminUtrecht",
 };
 
 const uploadsDir = path.join(__dirname, "uploads");
@@ -111,7 +121,7 @@ const storage = multer.diskStorage({
   filename: function (req, file, cb) {
     const safeName = file.originalname.replace(/\s+/g, "_");
     cb(null, `${Date.now()}-${safeName}`);
-  }
+  },
 });
 
 const upload = multer({ storage });
@@ -278,16 +288,18 @@ app.post("/subadmin-aanvraag-actie", async (req, res) => {
       });
 
       console.log("Mail succesvol verstuurd:", info);
+
+      return res.json({
+        message: "Aanvraag goedgekeurd en stemcode verstuurd.",
+        stemcode: aanvraag.stemcode,
+      });
     } catch (err) {
       console.error("Fout bij mail versturen:", err);
       return res.status(500).json({
         message: "Aanvraag goedgekeurd, maar e-mail versturen mislukt.",
+        stemcode: aanvraag.stemcode,
       });
     }
-
-    return res.json({
-      message: "Aanvraag goedgekeurd en stemcode verstuurd.",
-    });
   }
 
   if (actie === "afkeuren") {
