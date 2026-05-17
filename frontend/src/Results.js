@@ -3,7 +3,7 @@ import React, { useState } from "react";
 const API_URL =
   process.env.NODE_ENV === "development"
     ? "http://localhost:4000"
-    : "https://backend-theaterscholensongfestival.onrender.com";
+    : "https://stemapp-nieuw.onrender.com";
 
 export default function Results() {
   const [password, setPassword] = useState("");

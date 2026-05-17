@@ -36,11 +36,11 @@ function shuffleArray(array) {
 const API_URL =
   process.env.NODE_ENV === "development"
     ? "http://localhost:4000"
-    : "https://backend-theaterscholensongfestival.onrender.com";
+    : "https://stemapp-nieuw.onrender.com";
 
 export default function SongfestivalStemformulier() {
   const [code, setCode] = useState("");
-  const [eigenSchool, setEigenSchool] = useState(null);
+  const [, setEigenSchool] = useState(null);
   const [schoolLijst, setSchoolLijst] = useState([]);
   const [response, setResponse] = useState("");
   const [step, setStep] = useState("init"); // init → code → drag → done

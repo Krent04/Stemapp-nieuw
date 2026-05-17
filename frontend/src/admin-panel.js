@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 const API_URL =
   process.env.NODE_ENV === "development"
     ? "http://localhost:4000"
-    : "https://backend-theaterscholensongfestival.onrender.com";
+    : "https://stemapp-nieuw.onrender.com";
 
 // ---- ADMIN WACHTWOORD: Zet hier je geheime wachtwoord, hetzelfde als in je backend ----
 const ADMIN_PASSWORD = "4sZ_apCc"; // <-- vervang door je echte wachtwoord!

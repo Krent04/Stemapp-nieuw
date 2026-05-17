@@ -4,7 +4,7 @@ import { useParams } from "react-router-dom";
 const API_URL =
   process.env.NODE_ENV === "development"
     ? "http://localhost:4000"
-    : "https://backend-theaterscholensongfestival.onrender.com";
+    : "https://stemapp-nieuw.onrender.com";
 
 const BACKEND_URL = API_URL; // Gebruik deze als prefix voor je foto's!
 

@@ -8,7 +8,7 @@ const SCHOLEN = [
 const API_URL =
   process.env.NODE_ENV === "development"
     ? "http://localhost:4000"
-    : "https://backend-theaterscholensongfestival.onrender.com";
+    : "https://stemapp-nieuw.onrender.com";
 
 export default function AanvraagFormulier() {
   const [school, setSchool] = useState("");
