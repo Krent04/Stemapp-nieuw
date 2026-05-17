@@ -10,8 +10,8 @@ console.log("require cors");
 const cors = require("cors");
 console.log("require body-parser");
 const bodyParser = require("body-parser");
-console.log("require nodemailer");
-const nodemailer = require("nodemailer");
+console.log("require resend");
+const { Resend } = require("resend");
 console.log("require multer");
 const multer = require("multer");
 console.log("require path");
@@ -116,21 +116,9 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-const transporter = nodemailer.createTransport({
-  host: process.env.EMAIL_HOST || "smtp.gmail.com",
-  port: Number(process.env.EMAIL_PORT || 587),
-  secure: String(process.env.EMAIL_SECURE || "false") === "true",
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS
-  }
-});
+const resend = new Resend(process.env.RESEND_API_KEY);
 
-console.log("EMAIL_HOST =", process.env.EMAIL_HOST);
-console.log("EMAIL_PORT =", process.env.EMAIL_PORT);
-console.log("EMAIL_SECURE =", process.env.EMAIL_SECURE);
-console.log("EMAIL_USER =", process.env.EMAIL_USER);
-console.log("EMAIL_PASS bestaat =", !!process.env.EMAIL_PASS);
+console.log("RESEND_API_KEY bestaat =", !!process.env.RESEND_API_KEY);
 console.log("EMAIL_FROM =", process.env.EMAIL_FROM);
 
 function generateStemcode() {
@@ -154,11 +142,13 @@ function berekenJuryUitslagGemiddelde(stemmen, scholen, puntenLijst) {
     const schoolStemmen = stemmenVanSchool[school] || [];
     if (schoolStemmen.length === 0) continue;
 
-    const andereScholen = scholen.filter(s => s !== school);
+    const andereScholen = scholen.filter((s) => s !== school);
     const scores = {};
 
     for (const ontvanger of andereScholen) {
-      const punten = schoolStemmen.map(verdeling => Number(verdeling[ontvanger]) || 0);
+      const punten = schoolStemmen.map(
+        (verdeling) => Number(verdeling[ontvanger]) || 0
+      );
       scores[ontvanger] = punten.length
         ? punten.reduce((a, b) => a + b, 0) / punten.length
         : 0;
@@ -195,14 +185,14 @@ app.post("/aanvraag", upload.single("foto"), (req, res) => {
   if (!school || !naam || !email || !req.file) {
     return res.json({
       success: false,
-      message: "Vul alle velden in en upload een foto."
+      message: "Vul alle velden in en upload een foto.",
     });
   }
 
   if (!SCHOLEN.includes(school)) {
     return res.json({
       success: false,
-      message: "Ongeldige school."
+      message: "Ongeldige school.",
     });
   }
 
@@ -219,7 +209,7 @@ app.post("/aanvraag", upload.single("foto"), (req, res) => {
     afgekeurdDoor: [],
     stemcode: null,
     stemGebruikt: false,
-    createdAt: new Date().toISOString()
+    createdAt: new Date().toISOString(),
   };
 
   aanvragen.push(nieuweAanvraag);
@@ -227,7 +217,7 @@ app.post("/aanvraag", upload.single("foto"), (req, res) => {
 
   return res.json({
     success: true,
-    message: "Aanvraag ontvangen! Je krijgt binnenkort een e-mail over jouw aanvraag."
+    message: "Aanvraag ontvangen! Je krijgt binnenkort een e-mail over jouw aanvraag.",
   });
 });
 
@@ -240,7 +230,7 @@ app.get("/subadmin-aanvragen", (req, res) => {
   }
 
   const aanvragen = leesAanvragen();
-  const resultaten = aanvragen.filter(a => a.school === school);
+  const resultaten = aanvragen.filter((a) => a.school === school);
 
   return res.json(resultaten);
 });
@@ -254,7 +244,7 @@ app.post("/subadmin-aanvraag-actie", async (req, res) => {
   }
 
   const aanvragen = leesAanvragen();
-  const index = aanvragen.findIndex(a => a.id === id && a.school === school);
+  const index = aanvragen.findIndex((a) => a.id === id && a.school === school);
 
   if (index === -1) {
     return res.status(404).json({ message: "Aanvraag niet gevonden." });
@@ -277,26 +267,26 @@ app.post("/subadmin-aanvraag-actie", async (req, res) => {
     schrijfAanvragen(aanvragen);
 
     try {
-  console.log("Ik ga mail versturen naar:", aanvraag.email);
+      console.log("Ik ga mail versturen naar:", aanvraag.email);
 
-  const info = await transporter.sendMail({
-    from: process.env.EMAIL_FROM || '"Songfestival" <theaterscholensongfestival@gmail.com>',
-    to: aanvraag.email,
-    subject: "Jouw stemcode voor het Theaterscholen Songfestival",
-    text: `Je aanvraag is goedgekeurd. Jouw stemcode is: ${aanvraag.stemcode}`,
-    html: `<p>Je aanvraag is goedgekeurd.</p><p>Jouw stemcode is: <b>${aanvraag.stemcode}</b></p>`
-  });
+      const info = await resend.emails.send({
+        from: process.env.EMAIL_FROM || "Songfestival <onboarding@resend.dev>",
+        to: aanvraag.email,
+        subject: "Jouw stemcode voor het Theaterscholen Songfestival",
+        text: `Je aanvraag is goedgekeurd. Jouw stemcode is: ${aanvraag.stemcode}`,
+        html: `<p>Je aanvraag is goedgekeurd.</p><p>Jouw stemcode is: <b>${aanvraag.stemcode}</b></p>`,
+      });
 
-  console.log("Mail succesvol verstuurd:", info);
-} catch (err) {
-  console.error("Fout bij mail versturen:", err);
-  return res.status(500).json({
-    message: "Aanvraag goedgekeurd, maar e-mail versturen mislukt."
+      console.log("Mail succesvol verstuurd:", info);
+    } catch (err) {
+      console.error("Fout bij mail versturen:", err);
+      return res.status(500).json({
+        message: "Aanvraag goedgekeurd, maar e-mail versturen mislukt.",
       });
     }
 
     return res.json({
-      message: "Aanvraag goedgekeurd en stemcode verstuurd."
+      message: "Aanvraag goedgekeurd en stemcode verstuurd.",
     });
   }
 
@@ -311,7 +301,7 @@ app.post("/subadmin-aanvraag-actie", async (req, res) => {
     schrijfAanvragen(aanvragen);
 
     return res.json({
-      message: "Aanvraag afgekeurd."
+      message: "Aanvraag afgekeurd.",
     });
   }
 
@@ -327,26 +317,26 @@ app.post("/verify-stemcode", (req, res) => {
 
   const aanvragen = leesAanvragen();
   const aanvraag = aanvragen.find(
-    a => a.stemcode === code && a.status === "goedgekeurd"
+    (a) => a.stemcode === code && a.status === "goedgekeurd"
   );
 
   if (!aanvraag) {
     return res.json({
       verified: false,
-      message: "Ongeldige stemcode."
+      message: "Ongeldige stemcode.",
     });
   }
 
   if (aanvraag.stemGebruikt) {
     return res.json({
       verified: false,
-      message: "Deze stemcode is al gebruikt."
+      message: "Deze stemcode is al gebruikt.",
     });
   }
 
   return res.json({
     verified: true,
-    school: aanvraag.school
+    school: aanvraag.school,
   });
 });
 
@@ -364,7 +354,7 @@ app.post("/vote", (req, res) => {
 
   const aanvragen = leesAanvragen();
   const aanvraagIndex = aanvragen.findIndex(
-    a => a.stemcode === code && a.status === "goedgekeurd"
+    (a) => a.stemcode === code && a.status === "goedgekeurd"
   );
 
   if (aanvraagIndex === -1) {
@@ -388,20 +378,20 @@ app.post("/vote", (req, res) => {
   if (
     puntenArray.length !== SONGFESTIVAL_PUNTEN.length ||
     !puntenArray.includes(0) ||
-    !SONGFESTIVAL_PUNTEN.every(p => puntenArray.filter(x => x === p).length === 1)
+    !SONGFESTIVAL_PUNTEN.every((p) => puntenArray.filter((x) => x === p).length === 1)
   ) {
     return res.json({
-      message: `Punten moeten exact ${[...SONGFESTIVAL_PUNTEN].join(", ")} zijn, elk 1x gebruikt.`
+      message: `Punten moeten exact ${[...SONGFESTIVAL_PUNTEN].join(", ")} zijn, elk 1x gebruikt.`,
     });
   }
 
-  const expectedScholen = SCHOLEN.filter(s => s !== stemmendeSchool);
+  const expectedScholen = SCHOLEN.filter((s) => s !== stemmendeSchool);
   if (
     Object.keys(puntenVerdeling).length !== expectedScholen.length ||
-    !Object.keys(puntenVerdeling).every(s => expectedScholen.includes(s))
+    !Object.keys(puntenVerdeling).every((s) => expectedScholen.includes(s))
   ) {
     return res.json({
-      message: "Er is iets mis met de lijst van scholen waar je op stemt."
+      message: "Er is iets mis met de lijst van scholen waar je op stemt.",
     });
   }
 
@@ -410,7 +400,7 @@ app.post("/vote", (req, res) => {
     code,
     school: stemmendeSchool,
     puntenVerdeling,
-    createdAt: new Date().toISOString()
+    createdAt: new Date().toISOString(),
   });
   schrijfStemmen(stemmen);
 
@@ -423,7 +413,11 @@ app.post("/vote", (req, res) => {
 
 app.get("/results", (req, res) => {
   const stemmen = leesStemmen();
-  const juryGemiddelde = berekenJuryUitslagGemiddelde(stemmen, SCHOLEN, SONGFESTIVAL_PUNTEN);
+  const juryGemiddelde = berekenJuryUitslagGemiddelde(
+    stemmen,
+    SCHOLEN,
+    SONGFESTIVAL_PUNTEN
+  );
 
   const totaal = {};
   for (const jurySchool in juryGemiddelde) {
@@ -438,13 +432,17 @@ app.get("/results", (req, res) => {
 
   res.json({
     jury: juryGemiddelde,
-    uitslag
+    uitslag,
   });
 });
 
 app.get("/uitslag", (req, res) => {
   const stemmen = leesStemmen();
-  const juryGemiddelde = berekenJuryUitslagGemiddelde(stemmen, SCHOLEN, SONGFESTIVAL_PUNTEN);
+  const juryGemiddelde = berekenJuryUitslagGemiddelde(
+    stemmen,
+    SCHOLEN,
+    SONGFESTIVAL_PUNTEN
+  );
 
   const totaal = {};
   for (const jurySchool in juryGemiddelde) {
@@ -457,25 +455,33 @@ app.get("/uitslag", (req, res) => {
     .map(([school, punten]) => ({ school, punten }))
     .sort((a, b) => b.punten - a.punten);
 
-  const juryHtml = Object.entries(juryGemiddelde).map(([school, puntenVerdeling]) => `
+  const juryHtml = Object.entries(juryGemiddelde)
+    .map(
+      ([school, puntenVerdeling]) => `
     <section class="jury-school">
       <h3>${school}</h3>
       <ul>
         ${
           Object.entries(puntenVerdeling)
             .sort((a, b) => b[1] - a[1])
-            .map(([ontvanger, punten]) =>
-              `<li><span>${ontvanger}</span><span class="punten">${punten}</span></li>`
-            ).join("")
+            .map(
+              ([ontvanger, punten]) =>
+                `<li><span>${ontvanger}</span><span class="punten">${punten}</span></li>`
+            )
+            .join("")
         }
       </ul>
     </section>
-  `).join("");
+  `
+    )
+    .join("");
 
-  const eindUitslagHtml = uitslag.map(
-    ({ school, punten }, idx) =>
-      `<li${idx === 0 ? ' class="winnaar"' : ''}><span>${idx + 1}. ${school}</span><span class="punten">${punten}</span></li>`
-  ).join("");
+  const eindUitslagHtml = uitslag
+    .map(
+      ({ school, punten }, idx) =>
+        `<li${idx === 0 ? ' class="winnaar"' : ""}><span>${idx + 1}. ${school}</span><span class="punten">${punten}</span></li>`
+    )
+    .join("");
 
   const stijl = `
     <style>
@@ -627,6 +633,7 @@ app.get("/uitslag", (req, res) => {
     </html>
   `);
 });
+
 console.log("Ik ga nu app.listen starten");
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`Backend draait op poort ${PORT}`);
