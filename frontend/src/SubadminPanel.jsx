@@ -13,7 +13,7 @@ const SUBADMIN_WACHTWOORDEN = {
   Arnhem: "subadminArnhem",
   ATKA: "subadminATKA",
   Brussel: "subadminBrussel",
-  "Den Bosch": "subadminDenBosch",
+  DenBosch: "subadminDenBosch",
   Filmacademie: "subadminFilmacademie",
   Gent: "subadminGent",
   Leuven: "subadminLeuven",
